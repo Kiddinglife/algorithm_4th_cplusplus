@@ -72,19 +72,71 @@ void sample_arithmetic_expression_evaluation()
 	and prints the equivalent infix expression with the parentheses inserted.
 	For example, given the input : 1 + 2 ) * 3 - 4 ) * 5 - 6 ) ) )
 	your program should print:     ((1 + 2) * ((3 - 4) * (5 - 6))
+	ops: "1"   "2"
+	exp:    "+"
+	=> meet ")"
+	ops: "(1+2)"  "3"   "4"
+	exp:            "*"  "-"
+	=> meet ")"
+	ops: "(1+2)"   "(3-4)"   "5"   "6"
+	exp:            "*"         "*"   "-"
+	=> meet ")"
+	ops: "(1+2)"   "(3-4)"   "(5-6)"
+	exp:            "*"         "*"
+	=> meet ")"
+	ops: "(1+2)"   "((3-4)*(5-6))"
+	exp:            "*"
+	=> meet last ")"
+	ops: "(((1+2)*(3-4)*(5-6)))"
+	exp:
+	=> done
 */
 void exercise_1_3_9()
 {
-	string line;
-	while (getline(cin, line) && line != "")
+	stack<string> expression;
+	stack<string> ops;
+	string tmp;
+	string ret;
+	string input;
+	tmp.reserve(1);
+	ret.reserve(64);
+	input.reserve(256);
+	getline(cin, input);
+	for (auto itr = input.begin(); itr != input.end(); ++itr)
 	{
-		getline(cin, line);
-		cout << line << endl;
+		if ((*itr == ' '))
+			continue;
+		tmp = *itr;
+		if (tmp == "+" || tmp == "-" || tmp == "*" || tmp == "/")
+			ops.push(tmp);
+		else if (*itr == ')')
+		{
+			tmp = expression.top();
+			expression.pop();
+			ret = "(" + (expression.size() ? expression.top() : "") + (ops.size() ? ops.top() : "") + tmp + ")";
+			if (ops.size())
+				ops.pop();
+			if (expression.size())
+				expression.pop();
+			expression.push(ret);
+		}
+		else
+			expression.push(tmp);
 	}
+	while (ops.size())
+	{	// this is for this is special case where ops not empty when all str are scanned 	eg. input = "1 + 2)) + 1 + 2)"; 
+		tmp = expression.top();
+		expression.pop();
+		ret = "(" + expression.top() + ops.top() + tmp + ")";
+		expression.pop();
+		ops.pop();
+		expression.push(ret);
+	}
+	cout << expression.top() << endl;
 }
 int main(char* args[])
 {
-	sample_arithmetic_expression_evaluation();
-	//exercise_1_3_9();
+	//sample_arithmetic_expression_evaluation();
+	exercise_1_3_9();
 	return 0;
 }
