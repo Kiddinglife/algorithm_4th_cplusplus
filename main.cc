@@ -10,133 +10,101 @@
 #include <array>
 using namespace std;
 
-/*
-	Arithmetic expression evaluation:
-	As another example of a stack client, we consider
-	a classic example that also demonstrates the utility of generics. Some of the first pro-
-	grams that we considered in Section 1.1 involved computing the value of arithmetic
-	expressions like this one:
-	( 1 + ( ( 2 + 3 ) * ( 4 * 5 ) ) )
-*/
-void sample_arithmetic_expression_evaluation()
+namespace chapter1
 {
-	cout << "sample_arithmetic_expression_evaluation:\n";
-	stack<string> ops;
-	stack<double> vals;
-	string exp("( 1 + ( ( 2 + 3 ) * ( 4 * 5 ) ) )");
-	string op;
-	double val;
-	string tmp;
-	double v;
-	for (char str : exp)
+	namespace section5
 	{
-		tmp = str;
-		switch (str)
+		namespace titles_4_5
 		{
-		case '(':
-		case ' ':
-			// ignore
-			break;
-		case '+':
-		case '-':
-		case '*':
-		case '/':
-			ops.push(tmp);
-			break;
-		case ')':
-			op = ops.top();
-			val = vals.top();
-			vals.pop();
-			ops.pop();
-			if (op == "+")
-				v = val + vals.top();
-			else if (op == "-")
-				v = vals.top() - val;
-			else if (op == "*")
-				v = vals.top() * val;
-			else if (op == "/")
-				v = vals.top() / val;
-			vals.pop();
-			vals.push(v);
-			break;
-		default:
-			vals.push(stod(tmp));
-			break;
+			// Figure 1.14 Swapping by three copies
+			void swap(double & x, double & y)
+			{
+				double tmp = x;
+				x = y;
+				y = tmp;
+			}
+			void swap(vector<string> & x, vector<string> & y)
+			{
+				vector<string> tmp = static_cast<vector<string> &&>(x);
+				x = static_cast<vector<string> &&>(y);
+				y = static_cast<vector<string> &&>(tmp);
+			}
+
+			// Figure 1.15 Swapping by three moves; first with a type cast, second using std::move
+			void swap(vector<string> & x, vector<string> & y)
+			{
+				vector<string> tmp = std::move(x);
+				x = std::move(y);
+				y = std::move(tmp);
+			}
+			void swap(vector<string> & x, vector<string> & y)
+			{
+				vector<string> tmp = x;
+				x = y;
+				y = tmp;
+			}
+
+			// Figure 1.12 Two versions to obtain a random item in an array; second version avoids
+			// creation of a temporary LargeType object, but only if caller accesses it with a constant reference
+			static list<int> f1(const vector<list<int>>& arr)
+			{
+				// rven thopugh arr[0] is copied to a tempory list<int> and returned to caller
+				// but 	c++ compiler looks at value's type just followed by rreturn keyword to recognize it is  lv or rv
+				// if caller do not specify std::move(), copy ctor is used. as it is not tempory return value not moved in default
+				return arr[0];
+			}
+			static const  list<int>& f2(const vector<list<int>>& arr)
+			{
+				return arr[0];
+			}
+
+			// Figure 1.13 Returning of a stack-allocated rvalue in C ++ 11
+			static vector<int> f3(const vector<int> & arr)
+			{
+				// if caller do not specify std::move(), move ctor is used.
+				// as it is tempory return value
+				vector<int> result(arr.size());
+				return result;
+			}
+
+			static void run()
+			{
+				vector<list<int>> vec;
+				list<int> lis;
+				lis.push_back(12);
+				vec.push_back(lis);
+				list<int> tmp1 = f1(vec); // 1 copy ctor is used notice the difference from  eg 5
+				list<int> tmp3 = std::move(f1(vec)); // 2 move ctor
+				list<int> tmp2 = f2(vec); // 3 copy ctor
+
+				const list<int>& tmp4 = f2(vec); // 4 pointer assigment
+				vector<int> vec1{ 1,2,6,5 };
+				// 5 move ctor is used in C++11 no need to std::move()
+				vector<int> sums = f3(vec1);
+			}
+		}
+		namespace titles_6
+		{
+			// three move swap looks like this:
+			//template<typename T> void swap(T& t1, T& t2) {
+			//	T temp = std::move(t1); // or T temp(std::move(t1));
+			//	t1 = std::move(t2);
+			//	t2 = std::move(temp);
+			//}
+
+			//IntCell & operator= (IntCell && rhs) // Move assignment
+			//{
+			// If swap is implemented as three moves, then we
+			// would have mutual nonterminating recursion.
+			//	std::swap(storedValue, rhs.storedValue);
+			//	 return *this;
+			// }
 		}
 	}
-	cout << vals.top() << endl;
 }
-/*
-	1.3.9
-	Write a program that takes from standard input an expression without left parentheses
-	and prints the equivalent infix expression with the parentheses inserted.
-	For example, given the input : 1 + 2 ) * 3 - 4 ) * 5 - 6 ) ) )
-	your program should print:     ((1 + 2) * ((3 - 4) * (5 - 6))
-	ops: "1"   "2"
-	exp:    "+"
-	=> meet ")"
-	ops: "(1+2)"  "3"   "4"
-	exp:            "*"  "-"
-	=> meet ")"
-	ops: "(1+2)"   "(3-4)"   "5"   "6"
-	exp:            "*"         "*"   "-"
-	=> meet ")"
-	ops: "(1+2)"   "(3-4)"   "(5-6)"
-	exp:            "*"         "*"
-	=> meet ")"
-	ops: "(1+2)"   "((3-4)*(5-6))"
-	exp:            "*"
-	=> meet last ")"
-	ops: "(((1+2)*(3-4)*(5-6)))"
-	exp:
-	=> done
-*/
-void exercise_1_3_9()
-{
-	stack<string> expression;
-	stack<string> ops;
-	string tmp;
-	string ret;
-	string input;
-	tmp.reserve(1);
-	ret.reserve(64);
-	input.reserve(256);
-	getline(cin, input);
-	for (auto itr = input.begin(); itr != input.end(); ++itr)
-	{
-		if ((*itr == ' '))
-			continue;
-		tmp = *itr;
-		if (tmp == "+" || tmp == "-" || tmp == "*" || tmp == "/")
-			ops.push(tmp);
-		else if (*itr == ')')
-		{
-			tmp = expression.top();
-			expression.pop();
-			ret = "(" + (expression.size() ? expression.top() : "") + (ops.size() ? ops.top() : "") + tmp + ")";
-			if (ops.size())
-				ops.pop();
-			if (expression.size())
-				expression.pop();
-			expression.push(ret);
-		}
-		else
-			expression.push(tmp);
-	}
-	while (ops.size())
-	{	// this is for this is special case where ops not empty when all str are scanned 	eg. input = "1 + 2)) + 1 + 2)"; 
-		tmp = expression.top();
-		expression.pop();
-		ret = "(" + expression.top() + ops.top() + tmp + ")";
-		expression.pop();
-		ops.pop();
-		expression.push(ret);
-	}
-	cout << expression.top() << endl;
-}
+
 int main(char* args[])
 {
-	//sample_arithmetic_expression_evaluation();
-	exercise_1_3_9();
+	chapter1::section5::titles_4_5::run();
 	return 0;
 }
