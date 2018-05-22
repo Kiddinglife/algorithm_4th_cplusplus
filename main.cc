@@ -177,8 +177,15 @@ namespace c1
 
   static int exc_1_find_kth_largest_num(vector<int>& vec, int k)
   {
+    cout << "exc_1_find_kth_largest_num(): ";
     stable_sort(vec.begin(), vec.end());
     return vec[vec.size() - k];
+  }
+
+  static vector<string> exc_2_word_puzzle(vector<vector<string>>& letters, vector<string>& words)
+  {
+    vector<string> ret;
+    return ret;
   }
 }
 
@@ -188,6 +195,13 @@ int main(int argnum, char* args[])
   c1::s3::print_num(1234, 0);
   c1::s5::supplyments::run();
   vector<int> a { 15, 2, 7 };
-  cout << c1::exc_1_find_kth_largest_num(a, 2);
+  cout << c1::exc_1_find_kth_largest_num(a, 2) << endl;
+
+  vector<vector<string>> letters;
+  vector<string> words;
+  vector<string> ret = c1::exc_2_word_puzzle(letters, words);
+  for (auto& str : ret)
+    cout << str << " ";
+  cout << endl;
   return 0;
 }
