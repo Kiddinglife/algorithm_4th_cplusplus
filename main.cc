@@ -182,9 +182,118 @@ namespace c1
     return vec[vec.size() - k];
   }
 
-  static vector<string> exc_2_word_puzzle(vector<vector<string>>& letters, vector<string>& words)
+  /*
+   hash all words;
+   The program is as follows:
+   for j = 1 to WordListLength // loop word list first because usally it has bigger size
+   for k = 1 to ArrayWidth
+   for l = 1 to ArrayLength
+   ... check if 1st letter of word is different from array element. if so, skip to next puzzle array element.
+   for m = 0 to 7 (up,up to right, right, down to right, down, down left, left, up to left directon)
+   ... check if length word from word list > number of letters to edge of puzzle array. if so skip to next puzzle array element.
+   ... check second letter of word is same or different in the 8 directions.
+   ... and so on until word is found
+   Brute force, but just as effective
+   */
+  static vector<string> exc_2_word_puzzle(vector<vector<char>>& letters, vector<string>& words)
   {
     vector<string> ret;
+    for (int row = 0; row < (int) letters.size(); row++)
+    {
+      auto& rows = letters[row];
+      for (int col = 0; col < (int) rows.size(); col++)
+      {
+        auto& letter = rows[col];
+        for (int i = 0; i < (int) words.size(); i++)
+        {
+          auto& word = words[i];
+          if (letter == word[0])
+          {
+            cout << "match first letter: " << letter << endl;
+            int cur;
+            bool cantop = false, canbot = false, canleft = false, canright = false;
+            //first letter matched start to check others direction with the rest of chars
+            for (int j = 1; j < (int) word.size(); j++)
+            {
+              auto& c = word[j];
+              cur = row - 1;
+              // check top
+              if (row > 0)
+              {
+                cantop = true;
+                if (row >= word.size() - 1)
+                {
+                  while (cur > 0)
+                  {
+                    if (letters[cur][col] != c)
+                    {
+                    }
+                    break;
+                    cur--;
+                  }
+                }
+              }
+              //check bot
+              if (row < (int) letters.size())
+              {
+                canbot = true;
+                if (letters.size() - row >= word.size())
+                {
+                  while (cur < (int) letters.size())
+                  {
+                    cur++;
+                  }
+                }
+              }
+              cur = col;
+              //check left
+              if (col > 0)
+              {
+                canleft = true;
+                if (col >= word.size() - 1)
+                {
+                  while (cur > 0)
+                  {
+                    cur--;
+                  }
+                }
+              }
+              //check right
+              if (col < (int) rows.size())
+              {
+                canright = true;
+                if (letters.size() - col >= word.size())
+                {
+                  while (cur < (int) rows.size())
+                  {
+                    cur++;
+                  }
+                }
+              }
+              //check top right
+              if (cantop && canright)
+              {
+              }
+              //check top left
+              if (cantop && canleft)
+              {
+              }
+              //check bot left
+              if (canbot && canleft)
+              {
+              }
+              //check bot right
+              if (canbot && canright)
+              {
+              }
+            }
+          }
+          else
+            continue;        // first letter not match, skip it
+        }
+      }
+      cout << endl;
+    }
     return ret;
   }
 }
@@ -197,8 +306,9 @@ int main(int argnum, char* args[])
   vector<int> a { 15, 2, 7 };
   cout << c1::exc_1_find_kth_largest_num(a, 2) << endl;
 
-  vector<vector<string>> letters;
-  vector<string> words;
+  vector<vector<char>> letters { { 't', 'h', 'i', 's' }, { 'w', 'a', 't', 's' }, { 'o', 'a', 'h', 'g' }, { 'f', 'g',
+      'd', 't' } };
+  vector<string> words { "hello", "jake", "name", "this", "two", "fat", "that", "at" };
   vector<string> ret = c1::exc_2_word_puzzle(letters, words);
   for (auto& str : ret)
     cout << str << " ";
