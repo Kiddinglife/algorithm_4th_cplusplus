@@ -183,6 +183,7 @@ namespace c1
   }
 
   /*
+   https://users.cs.fiu.edu/~weiss/adspc++2/code/WordSrch.cpp
    hash all words;
    The program is as follows:
    for j = 1 to WordListLength // loop word list first because usally it has bigger size
