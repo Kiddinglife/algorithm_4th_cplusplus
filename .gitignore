@@ -121,13 +121,11 @@ msvc/.vs
 /Release
 # virtual studio temp files
 *.suo
-*.pdf
 *.sdf
 *.opensdf
 *.filters
 *.user
 *.mk
-*~
 *.opendb
 geco-engine.VC.db
 *.idb
