@@ -10,6 +10,14 @@
 #include <array>
 #include <algorithm>
 #include <unordered_set>
+#include <float.h>
+#include <limits.h>
+#include <cmath>
+#include <limits>
+#include <iomanip>
+#include <iostream>
+#include <type_traits>
+#include <numeric>
 using namespace std;
 
 namespace c1
@@ -153,7 +161,7 @@ namespace c1
       }
       static void run()
       {
-        cout << "std::forward and std::move: " <<  endl;
+        cout << "std::forward and std::move: " << endl;
 
         X a;
         fn(a);
@@ -192,7 +200,7 @@ namespace c1
    */
   static vector<vector<string>> exc_2_word_puzzle(vector<vector<string>>& letters, vector<string>& words)
   {
-    cout << "exc_2_word_puzzle: " <<  endl;
+    cout << "exc_2_word_puzzle: " << endl;
     unordered_set<string> hash(words.begin(), words.end());
     int cols = letters[0].size();
     int rows = letters.size();
@@ -277,23 +285,40 @@ namespace c1
     return ret;
   }
 
+  static void print_double(int num)
+  {
+    if (num >= 10)
+      print_double(num / 10);
+    cout << (int) num % 10;
+  }
   static void exc_3_print_double(double num)
   {
-
+    // to_string(0 is not accurate when you have many decimal points
+    cout << "exc_3_print_double(" << to_string(num) << "): ";
+    print_double((int) num);
+    cout << ".";
+    num -= (double) (int) num;
+    double diff;
+    do
+    {
+      num *= 10;
+      diff = num - (double) ((int) num);
+    } while (diff >= (double) 0.1);
+    print_double(num);
   }
 }
 int main(int argnum, char* args[])
 {
   c1::s5::t_4_and_5::run();
 
-  cout << "print_num(): " <<  endl;
+  cout << "print_num(): " << endl;
   c1::s3::print_num(1234, 0);
   cout << endl;
 
   c1::s5::supplyments::run();
   cout << endl;
 
-  vector<int> a{ 15, 2, 7 };
+  vector<int> a { 15, 2, 7 };
   cout << c1::exc_1_find_kth_largest_num(a, 2) << endl << endl;
 
   vector<vector<string>> letters { { "t", "h", "i", "s", "n", "c" }, { "w", "f", "t", "s", "a", "s" }, { "o", "a", "h",
@@ -307,5 +332,9 @@ int main(int argnum, char* args[])
       cout << str;
     cout << endl;
   }
+  cout << endl;
+
+  c1::exc_3_print_double(12345.123456789);
+
   return 0;
 }
