@@ -18,7 +18,31 @@
 #include <iostream>
 #include <type_traits>
 #include <numeric>
+#include <chrono>
+
 using namespace std;
+
+/** How to use:
+
+ profile_start(code1);
+ ...code
+ profile_end_ms(code1);
+
+ profile_start(code2);
+ ...code
+ profile_end_ms(code2);
+
+ profile_ratio(code1, code2);
+ */
+#define profile_start(id) \
+auto start##id = std::chrono::steady_clock::now()
+#define profile_end_ms(id) \
+auto end##id = std::chrono::steady_clock::now();\
+auto elapsed##id = \
+std::chrono::duration<double, std::milli>(end##id - start##id).count() ;\
+std::cout << #id << ":" << elapsed##id<< "ms, "
+#define profile_ratio(id1,id2) \
+std::cout << "ratio: " << (elapsed##id1)/(elapsed##id2) << " ";
 
 namespace c1
 {
@@ -198,7 +222,7 @@ namespace c1
    then find if there is matching in all directions
    O(n^2)
    */
-  static vector<vector<string>> exc_2_word_puzzle(vector<vector<string>>& letters, vector<string>& words)
+  static vector<vector<string>> exc_2_word_puzzle_v1(vector<vector<string>>& letters, vector<string>& words)
   {
     cout << "exc_2_word_puzzle: " << endl;
     unordered_set<string> hash(words.begin(), words.end());
@@ -217,7 +241,7 @@ namespace c1
         letter.assign(letters[row][col]);
         for (; cur > 0; cur--)
         {
-          letter += letters[cur][col];
+          letter.append(letters[cur][col]);
           if (hash.find(letter) != hash.end())
           {
             int curr = cur;
@@ -234,7 +258,7 @@ namespace c1
         cur = row;
         for (; cur < rows; cur++)
         {
-          letter += letters[cur][col];
+          letter.append(letters[cur][col]);
           if (hash.find(letter) != hash.end())
           {
             int curr = cur;
@@ -251,7 +275,7 @@ namespace c1
         cur = col;
         for (; cur > 0; cur--)
         {
-          letter += letters[row][cur];
+          letter.append(letters[row][cur]);
           if (hash.find(letter) != hash.end())
           {
             int curr = cur;
@@ -268,7 +292,7 @@ namespace c1
         cur = col;
         for (; cur < cols; cur++)
         {
-          letter += letters[row][cur];
+          letter.append(letters[row][cur]);
           if (hash.find(letter) != hash.end())
           {
             int curr = cur;
@@ -283,6 +307,19 @@ namespace c1
       }
     }
     return ret;
+  }
+
+  static inline bool exc_2_word_puzzle_v2(std::vector<std::vector<char> > &board, std::string word)
+  {
+    int rows = static_cast<int>(board.size());
+    int cols = static_cast<int>(board[0].size());
+    for (int row = 0; row != rows; ++row)
+    {
+      for (int col = 0; col != cols; ++col)
+      {
+      }
+    }
+    return false;
   }
 
   static void print_double(int num)
@@ -325,7 +362,8 @@ int main(int argnum, char* args[])
       "g", "m", "d" }, { "f", "t", "d", "t", "e", "f" }, { "o", "a", "h", "g", "m", "d" }, { "o", "a", "h", "g", "m",
       "d" } };
   vector<string> words { "hello", "jake", "name", "this", "two", "fat", "that", "at" };
-  vector<vector<string>> ret = c1::exc_2_word_puzzle(letters, words);
+  vector<vector<string>> ret = c1::exc_2_word_puzzle_v1(letters, words);
+  cout << endl;
   for (auto& row : ret)
   {
     for (auto& str : row)
