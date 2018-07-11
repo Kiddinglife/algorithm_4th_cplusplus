@@ -4,6 +4,7 @@
 #include <stack>
 #include <list>
 #include <map>
+#include <queue>
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
@@ -47,17 +48,17 @@ namespace geeksforgeeks
   {
     /* A binary tree node has data, pointer to left child
      and a pointer to right child */
-    struct Node
+    struct node
     {
         int data;
-        struct Node* left, *right;
-        Node(int data)
+        struct node* left, *right;
+        node(int data)
         {
           this->data = data;
           left = right = NULL;
         }
     };
-    static Node* create_tree()
+    static node* create_tree()
     {
       ///        1
       ///      /    \
@@ -66,21 +67,21 @@ namespace geeksforgeeks
       /// 4    5
       ///       /\
       ///     6 nil
-      struct Node *root = new Node(1);
-      root->left = new Node(2);
-      root->right = new Node(3);
-      root->left->left = new Node(4);
-      root->left->right = new Node(5);
-      root->left->right->left = new Node(6);
+      struct node *root = new node(1);
+      root->left = new node(2);
+      root->right = new node(3);
+      root->left->left = new node(4);
+      root->left->right = new node(5);
+      root->left->right->left = new node(6);
       return root;
     }
-    namespace travelsal
+    namespace recusive_travelsal
     {
       // left right is fixed up we only look at root's positon inorder is in middle
       // postorder is in back preorder is in front
       // https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
       // left right root
-      static void postorder(Node* root)
+      static void postorder(node* root)
       {
         if (!root)
           return;
@@ -88,7 +89,7 @@ namespace geeksforgeeks
         postorder(root->right);
         cout << root->data;
       }
-      static void inorder(Node* root)
+      static void inorder(node* root)
       {
         if (!root)
           return;
@@ -96,7 +97,7 @@ namespace geeksforgeeks
         cout << root->data;
         inorder(root->right);
       }
-      static void preorder(Node* root)
+      static void preorder(node* root)
       {
         if (!root)
           return;
@@ -106,8 +107,8 @@ namespace geeksforgeeks
       }
       static void run()
       {
-        cout << "geeksforgeeks\n---> binarytree\n------> travelsal\n";
-        Node* root = create_tree();
+        cout << "geeksforgeeks\n---> binarytree\n------> recusive_travelsal\n";
+        node* root = create_tree();
         cout << "--------> inorder() = ";
         inorder(root);  //426513
         cout << endl;
@@ -119,6 +120,85 @@ namespace geeksforgeeks
         cout << endl;
       }
     }
+	namespace non_recusive_travelsal
+	{
+		static void preorder(node* root)
+		{
+			//1) Create an empty stack S.
+			stack<node*> s;
+			//2) Initialize current node as root
+			node* cur = root;
+			//3) If current is NULL and stack is not empty then 
+			while (cur || !s.empty())
+			{
+				//4) Push the current node to S and set current = current->left until current is NULL
+				while (cur)
+				{
+					/* place pointer to a tree node on
+					the stack before traversing
+					the node's left subtree */
+					cout << cur->data;
+					s.push(cur);
+					cur = cur->left;
+				}
+				/* Current must be NULL at this point */
+				//b) Print the dequeued item, set current = popped_item->right
+				cur = s.top();
+				//a) pop
+				s.pop();
+				/* we have visited the node and its
+				left subtree.  Now, it's right subtree's turn */
+				cur = cur->right;
+			}
+		}
+		static void inorder(node* root)
+		{
+			//1) Create an empty stack S.
+			stack<node*> s;
+			//2) Initialize current node as root
+			node* cur = root;
+			//3) If current is NULL and stack is not empty then 
+			while (cur || !s.empty())
+			{
+				//4) Push the current node to S and set current = current->left until current is NULL
+				while (cur)
+				{
+					/* place pointer to a tree node on
+					the stack before traversing
+					the node's left subtree */
+					s.push(cur);
+					cur = cur->left;
+				}
+				/* Current must be NULL at this point */
+				//b) Print the popped item, set current = popped_item->right
+				cur = s.top();
+				//a) Pop the top item from stack.
+				s.pop();
+				cout << cur->data;
+				/* we have visited the node and its
+				left subtree.  Now, it's right subtree's turn */
+				cur = cur->right;
+			}
+		}
+		static void postorder(node* root)
+		{
+
+		}
+		static void run()
+		{
+			cout << "------> non_recusive_travelsal\n";
+			node* root = create_tree();
+			cout << "--------> inorder() = ";
+			inorder(root);  //426513
+			cout << endl;
+			cout << "--------> preorder() = ";
+			preorder(root); // 124563
+			cout << endl;
+			cout << "--------> postorder() = ";
+			postorder(root); // 465231
+			cout << endl;
+		}
+	}
   }
 }
 
@@ -479,6 +559,7 @@ int main(int argnum, char* args[])
   ds_algo_in_c::c1::exc_3_print_double(12345.123456789);
   ds_algo_in_c::c1::exc_3_print_double_i(12345.123456789);
   cout << endl;
-  geeksforgeeks::binarytree::travelsal::run();
+  geeksforgeeks::binarytree::recusive_travelsal::run();
+  geeksforgeeks::binarytree::non_recusive_travelsal::run();
   return 0;
 }
