@@ -23,15 +23,12 @@
 using namespace std;
 
 /** How to use:
-
  profile_start(code1);
  ...code
  profile_end_ms(code1);
-
  profile_start(code2);
  ...code
  profile_end_ms(code2);
-
  profile_ratio(code1, code2);
  */
 #define profile_start(id) \
@@ -467,6 +464,7 @@ namespace ds_algo_in_c
     }
   }
 }
+
 int main(int argnum, char* args[])
 {
   ds_algo_in_c::c1::s5::t_4_and_5::run();
