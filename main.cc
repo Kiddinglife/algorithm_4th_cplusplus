@@ -105,6 +105,38 @@ namespace geeksforgeeks
         preorder(root->left);
         preorder(root->right);
       }
+      namespace levelorder
+      {
+        /* Compute the "height" of a tree -- the number of
+         nodes along the longest path from the root node
+         down to the farthest leaf node.*/
+        static int tree_height(node* root)
+        {
+          if (!root)
+            return 0;
+          int lh = tree_height(root->left);
+          int rh = tree_height(root->right);
+          return max(lh, rh) + 1;
+        }
+        static void print_level(node* root, int level)
+        {
+          if (!root)
+            return;
+          if (level == 1)
+            cout << root->data;
+          else
+          {
+            print_level(root->left, level - 1);
+            print_level(root->right, level - 1);
+          }
+        }
+        static void levelorder(node* root)
+        {
+          int h = tree_height(root);
+          for (int i = 1; i <= h; i++)
+            print_level(root, i);
+        }
+      }
       static void run()
       {
         cout << "geeksforgeeks\n---> binarytree\n------> recusive_travelsal\n";
@@ -118,87 +150,90 @@ namespace geeksforgeeks
         cout << "--------> postorder() = ";
         postorder(root); // 465231
         cout << endl;
+        cout << "--------> levelorder() = ";
+        levelorder::levelorder(root); // 123456
+        cout << endl;
       }
     }
-	namespace non_recusive_travelsal
-	{
-		static void preorder(node* root)
-		{
-			//1) Create an empty stack S.
-			stack<node*> s;
-			//2) Initialize current node as root
-			node* cur = root;
-			//3) If current is NULL and stack is not empty then 
-			while (cur || !s.empty())
-			{
-				//4) Push the current node to S and set current = current->left until current is NULL
-				while (cur)
-				{
-					/* place pointer to a tree node on
-					the stack before traversing
-					the node's left subtree */
-					cout << cur->data;
-					s.push(cur);
-					cur = cur->left;
-				}
-				/* Current must be NULL at this point */
-				//b) Print the dequeued item, set current = popped_item->right
-				cur = s.top();
-				//a) pop
-				s.pop();
-				/* we have visited the node and its
-				left subtree.  Now, it's right subtree's turn */
-				cur = cur->right;
-			}
-		}
-		static void inorder(node* root)
-		{
-			//1) Create an empty stack S.
-			stack<node*> s;
-			//2) Initialize current node as root
-			node* cur = root;
-			//3) If current is NULL and stack is not empty then 
-			while (cur || !s.empty())
-			{
-				//4) Push the current node to S and set current = current->left until current is NULL
-				while (cur)
-				{
-					/* place pointer to a tree node on
-					the stack before traversing
-					the node's left subtree */
-					s.push(cur);
-					cur = cur->left;
-				}
-				/* Current must be NULL at this point */
-				//b) Print the popped item, set current = popped_item->right
-				cur = s.top();
-				//a) Pop the top item from stack.
-				s.pop();
-				cout << cur->data;
-				/* we have visited the node and its
-				left subtree.  Now, it's right subtree's turn */
-				cur = cur->right;
-			}
-		}
-		static void postorder(node* root)
-		{
+    namespace non_recusive_travelsal
+    {
+      static void preorder(node* root)
+      {
+        //1) Create an empty stack S.
+        stack<node*> s;
+        //2) Initialize current node as root
+        node* cur = root;
+        //3) If current is NULL and stack is not empty then
+        while (cur || !s.empty())
+        {
+          //4) Push the current node to S and set current = current->left until current is NULL
+          while (cur)
+          {
+            /* place pointer to a tree node on
+             the stack before traversing
+             the node's left subtree */
+            cout << cur->data;
+            s.push(cur);
+            cur = cur->left;
+          }
+          /* Current must be NULL at this point */
+          //b) Print the dequeued item, set current = popped_item->right
+          cur = s.top();
+          //a) pop
+          s.pop();
+          /* we have visited the node and its
+           left subtree.  Now, it's right subtree's turn */
+          cur = cur->right;
+        }
+      }
+      static void inorder(node* root)
+      {
+        //1) Create an empty stack S.
+        stack<node*> s;
+        //2) Initialize current node as root
+        node* cur = root;
+        //3) If current is NULL and stack is not empty then
+        while (cur || !s.empty())
+        {
+          //4) Push the current node to S and set current = current->left until current is NULL
+          while (cur)
+          {
+            /* place pointer to a tree node on
+             the stack before traversing
+             the node's left subtree */
+            s.push(cur);
+            cur = cur->left;
+          }
+          /* Current must be NULL at this point */
+          //b) Print the popped item, set current = popped_item->right
+          cur = s.top();
+          //a) Pop the top item from stack.
+          s.pop();
+          cout << cur->data;
+          /* we have visited the node and its
+           left subtree.  Now, it's right subtree's turn */
+          cur = cur->right;
+        }
+      }
+      static void postorder(node* root)
+      {
 
-		}
-		static void run()
-		{
-			cout << "------> non_recusive_travelsal\n";
-			node* root = create_tree();
-			cout << "--------> inorder() = ";
-			inorder(root);  //426513
-			cout << endl;
-			cout << "--------> preorder() = ";
-			preorder(root); // 124563
-			cout << endl;
-			cout << "--------> postorder() = ";
-			postorder(root); // 465231
-			cout << endl;
-		}
-	}
+      }
+      static void run()
+      {
+        cout << "------> non_recusive_travelsal\n";
+        node* root = create_tree();
+        cout << "--------> inorder() = ";
+        inorder(root);  //426513
+        cout << endl;
+        cout << "--------> preorder() = ";
+        preorder(root); // 124563
+        cout << endl;
+        cout << "--------> postorder() = ";
+        postorder(root); // 465231
+        cout << endl;
+      }
+    }
   }
 }
 
