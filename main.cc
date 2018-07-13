@@ -60,13 +60,6 @@ namespace geeksforgeeks
     };
     static node* create_tree()
     {
-      ///        1
-      ///      /    \
-      ///    2      3
-      ///  /  \
-      /// 4    5
-      ///       /\
-      ///     6 nil
       struct node *root = new node(1);
       root->left = new node(2);
       root->right = new node(3);
@@ -107,6 +100,7 @@ namespace geeksforgeeks
       }
       namespace levelorder
       {
+        // O(n^2)
         /* Compute the "height" of a tree -- the number of
          nodes along the longest path from the root node
          down to the farthest leaf node.*/
@@ -130,8 +124,9 @@ namespace geeksforgeeks
             print_level(root->right, level - 1);
           }
         }
-        static void levelorder(node* root)
+        static void run(node* root)
         {
+          // O(n) + O(n-1) + O(n-2) + .. + O(1) which is O(n^2).
           int h = tree_height(root);
           for (int i = 1; i <= h; i++)
             print_level(root, i);
@@ -139,6 +134,13 @@ namespace geeksforgeeks
       }
       static void run()
       {
+        ///        1
+        ///      /    \
+        ///    2      3
+        ///  /  \
+        /// 4    5
+        ///       /\
+        ///     6 nil
         cout << "geeksforgeeks\n---> binarytree\n------> recusive_travelsal\n";
         node* root = create_tree();
         cout << "--------> inorder() = ";
@@ -151,7 +153,7 @@ namespace geeksforgeeks
         postorder(root); // 465231
         cout << endl;
         cout << "--------> levelorder() = ";
-        levelorder::levelorder(root); // 123456
+        levelorder::run(root); // 123456
         cout << endl;
       }
     }
@@ -159,31 +161,20 @@ namespace geeksforgeeks
     {
       static void preorder(node* root)
       {
-        //1) Create an empty stack S.
-        stack<node*> s;
-        //2) Initialize current node as root
-        node* cur = root;
-        //3) If current is NULL and stack is not empty then
-        while (cur || !s.empty())
+        if (root == NULL)
+          return;
+        stack<node *> nodeStack;
+        nodeStack.push(root);
+        while (!nodeStack.empty())
         {
-          //4) Push the current node to S and set current = current->left until current is NULL
-          while (cur)
-          {
-            /* place pointer to a tree node on
-             the stack before traversing
-             the node's left subtree */
-            cout << cur->data;
-            s.push(cur);
-            cur = cur->left;
-          }
-          /* Current must be NULL at this point */
-          //b) Print the dequeued item, set current = popped_item->right
-          cur = s.top();
-          //a) pop
-          s.pop();
-          /* we have visited the node and its
-           left subtree.  Now, it's right subtree's turn */
-          cur = cur->right;
+          node *node = nodeStack.top();
+          printf("%d", node->data);
+          nodeStack.pop();
+          // Note that right child is pushed first so that left is processed first
+          if (node->right)
+            nodeStack.push(node->right);
+          if (node->left)
+            nodeStack.push(node->left);
         }
       }
       static void inorder(node* root)
@@ -217,20 +208,84 @@ namespace geeksforgeeks
       }
       static void postorder(node* root)
       {
-
+        //1) Create an empty stack S.
+        stack<node*> s;
+        //2) Initialize current node as root
+        node* cur = root;
+        node* rightnode = nullptr;
+        //3) If current is NULL and stack is not empty then
+        while (cur || !s.empty())
+        {
+          //4) Push the current node to S and set current = current->left until current is NULL
+          while (cur)
+          {
+            /* place pointer to a tree node on
+             the stack before traversing
+             the node's left subtree */
+            s.push(cur);
+            cur = cur->left;
+          }
+          cur = s.top();
+          if (!cur->right || rightnode == cur->right)
+          {
+            // cur->left must be null plus right is null leaf node just print it and pop it
+            //a) Pop the top item from stack.
+            //b) Print the popped item, set current = popped_item->right
+            s.pop();
+            cout << cur->data;
+            cur = nullptr;            // this gives us the next node in stack in next iteration
+          }
+          else
+          {
+            /* we have visited the node and its
+             left subtree.  Now, it's right subtree's turn */
+            cur = cur->right;
+            rightnode = cur;
+          }
+        }
       }
+      void levelorder(node *root)
+      {
+        if (!root)
+          return;
+        queue<node*> q;
+        // Enqueue Root and initialize height
+        q.push(root);
+        while (!q.empty())
+        {
+          // Print front of queue and remove it from queue
+          root = q.front();
+          cout << root->data;
+          q.pop();
+          if (root->left)
+            q.push(root->left);
+          if (root->right)
+            q.push(root->right);
+        }
+      }
+
       static void run()
       {
+        ///        1
+        ///      /    \
+        ///    2      3
+        ///  /  \
+        /// 4    5
+        ///       /\
+        ///     6 nil
         cout << "------> non_recusive_travelsal\n";
         node* root = create_tree();
         cout << "--------> inorder() = ";
         inorder(root);  //426513
         cout << endl;
         cout << "--------> preorder() = ";
-        preorder(root); // 124563
+        preorder(root);  // 124563
         cout << endl;
         cout << "--------> postorder() = ";
-        postorder(root); // 465231
+        postorder(root);  // 465231
+        cout << endl;
+        cout << "--------> levelorder() = ";
+        levelorder(root);  // 123456
         cout << endl;
       }
     }
